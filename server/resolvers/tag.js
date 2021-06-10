@@ -2,7 +2,7 @@ const { UserInputError } = require("apollo-server-errors")
 const Tag = require("../models/Tag")
 
 const tag = {
-  Query: {
+  queries: {
     getAllTags: async () => {
       return await Tag.find()
     },
@@ -18,7 +18,7 @@ const tag = {
           throw new Error(err)
         })
     },
-    getTagByName: (async, args, context, info) => {
+    getTagByName: async (parent, args, context, info) => {
       return Tag.findOne({name: args.name})
         .then(doc => {
           if (!doc)
@@ -31,7 +31,7 @@ const tag = {
         })
     }
   },
-  Mutation: {
+  mutations: {
     createTag: async (parent, args, context, info) => {
       const {name} = args.input
       const tag = new Tag({name})

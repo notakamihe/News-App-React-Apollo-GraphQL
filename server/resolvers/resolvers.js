@@ -6,10 +6,20 @@ const user = require("./user")
 
 const resolvers = {
   FileUpload: GraphQLUpload,
-  ...user,
-  ...article,
-  ...tag,
-  ...comment
+  Query: {
+    ...user.queries,
+    ...tag.queries,
+    ...article.queries,
+    ...comment.queries,
+  },
+  Mutation: {
+    ...user.mutations,
+    ...tag.mutations,
+    ...article.mutations,
+    ...comment.mutations
+  },
 }
+
+console.log(resolvers);
 
 module.exports = resolvers

@@ -20,12 +20,10 @@ const articleSchema = mongoose.Schema({
   authors: [{
     type: mongoose.Types.ObjectId,
     ref: "User",
-    minLength: [1, "Article must have at least one author."]
   }],
   tags: [{
     type: mongoose.Types.ObjectId,
-    ref: "Tag",
-    maxLength: [5, "Article msut have no more than 5 tags."]
+    ref: "Tag"
   }],
   comments: [{
     type: mongoose.Types.ObjectId,
@@ -34,11 +32,25 @@ const articleSchema = mongoose.Schema({
 })
 
 articleSchema.path("authors").validate((authors) => {
-  return authors.all(a => authors.filter(x => a === x).length === 1)
-}, "Duplicate authors not allowed.")
+  if (!authors.every(a => authors.filter(x => a === x).length === 1))
+    throw new Error("Duplicate authors not allowed.")
+
+  if (authors.length < 1)
+    throw new Error("Article must have at least one author.")
+
+  return true
+})
 
 articleSchema.path("tags").validate((tags) => {
-  return tags.all(t => tags.filter(x => t === x).length === 1)
-}, "Duplicate tags not allowed.")
+  if (tags.some(t => { console.log(tags); tags.filter(x => t === x).length === 1 }))
+    throw new Error("Duplicate tags not allowed.")
+
+  if (tags.length < 1)
+    throw new Error("Article must belong to at least 1 tag.")
+  else if (tags.length > 5)
+    throw new Error("Article must have no more than 5 tags.")
+
+  return true
+})
 
 module.exports = mongoose.model("Article", articleSchema)

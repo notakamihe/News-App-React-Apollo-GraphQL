@@ -57,7 +57,7 @@ type Comment {
   _id: ID!
   content: String!
   createdOn: String!
-  repliedTo: User,
+  repliedTo: Comment,
   user: User
 }
 

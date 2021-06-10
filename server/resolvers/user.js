@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
 const user = {
-  Query: {
+  queries: {
     getAllUsers: async () => {
       return await User.find()
     },
@@ -55,7 +55,7 @@ const user = {
       return {token}
     }
   },
-  Mutation: {
+  mutations: {
     deleteUser: async (parent, args, context, info) => {
       return User.findByIdAndDelete(args.id)
         .then(doc => {
