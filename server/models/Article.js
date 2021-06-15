@@ -1,4 +1,8 @@
+const { UserInputError } = require("apollo-server-express");
 const mongoose = require("mongoose");
+const { isIdValid } = require("../utils/utils");
+const Tag = require("./Tag");
+const User = require("./User");
 
 const articleSchema = mongoose.Schema({
   title: {
@@ -31,24 +35,34 @@ const articleSchema = mongoose.Schema({
   }],
 })
 
-articleSchema.path("authors").validate((authors) => {
-  if (!authors.every(a => authors.filter(x => a === x).length === 1))
-    throw new Error("Duplicate authors not allowed.")
+articleSchema.path("authors").validate(async (authors) => {
+  if (!authors.every(a => authors.filter(x => a.toString() === x.toString()).length === 1))
+    throw new UserInputError("Duplicate authors not allowed.")
+
+    for (const author of authors) {
+      if (!(await isIdValid(author, User)))
+        throw new UserInputError("All author ids must be valid.")
+    }
 
   if (authors.length < 1)
-    throw new Error("Article must have at least one author.")
+    throw new UserInputError("Article must have at least one author.")
 
   return true
 })
 
-articleSchema.path("tags").validate((tags) => {
-  if (tags.some(t => { console.log(tags); tags.filter(x => t === x).length === 1 }))
-    throw new Error("Duplicate tags not allowed.")
+articleSchema.path("tags").validate(async (tags) => {
+  if (!tags.every(t => tags.filter(x => t.toString() === x.toString()).length === 1))
+    throw new UserInputError("Duplicate tags not allowed.")
 
+  for (const tag of tags) {
+    if (!(await isIdValid(tag, Tag)))
+      throw new UserInputError("All tag ids must be valid.")
+  }
+  
   if (tags.length < 1)
-    throw new Error("Article must belong to at least 1 tag.")
+    throw new UserInputError("Article must belong to at least 1 tag.")
   else if (tags.length > 5)
-    throw new Error("Article must have no more than 5 tags.")
+    throw new UserInputError("Article must have no more than 5 tags.")
 
   return true
 })

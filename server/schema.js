@@ -91,6 +91,7 @@ type Query {
 
   getAllArticles: [Article]
   getArticle(id: ID): Article
+  getArticleComments(id: ID): [Comment]
 
   getAllComments: [Comment]
   getCommentById(id: ID): Comment
@@ -106,10 +107,10 @@ type Mutation {
   deleteUser(id: ID): String
 
   createArticle(input: ArticleInput): Article
-  updateArticle(input: ArticleInput): Article
+  updateArticle(id: ID, input: ArticleInput): Article
   updateArticleImage(id: ID, file: FileUpload!): Article
   addCommentToArticle(id: ID, input: CommentInput): Article
-  removeCommentFromArticle(id: ID, commentID: ID): Article
+  deleteArticle(id: ID): String
 
   deleteComment(id: ID): String
 

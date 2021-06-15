@@ -20,6 +20,4 @@ const resolvers = {
   },
 }
 
-console.log(resolvers);
-
 module.exports = resolvers
