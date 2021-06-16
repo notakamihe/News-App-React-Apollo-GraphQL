@@ -1,8 +1,6 @@
 const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
-scalar FileUpload
-
 type User {
   _id: ID!
   email: String!
@@ -108,7 +106,7 @@ type Mutation {
 
   createArticle(input: ArticleInput): Article
   updateArticle(id: ID, input: ArticleInput): Article
-  updateArticleImage(id: ID, file: FileUpload!): Article
+  updateArticleImage(id: ID, file: Upload): Article
   addCommentToArticle(id: ID, input: CommentInput): Article
   deleteArticle(id: ID): String
 

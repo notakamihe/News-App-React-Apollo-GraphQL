@@ -5,10 +5,15 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "preinstall": "npx npm-force-resolutions"
   },
   "author": "",
   "license": "ISC",
+  "resolutions": {
+    "fs-capacitor": "^6.2.0",
+    "graphql-upload": "^11.0.0"
+  },
   "dependencies": {
     "apollo-server-express": "^2.25.0",
     "bcryptjs": "^2.4.3",
@@ -20,6 +25,7 @@
     "graphql-tools": "^7.0.5",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.12",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "uuid": "^8.3.2"
   }
 }

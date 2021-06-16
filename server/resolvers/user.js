@@ -5,7 +5,7 @@ const User = require("../models/User")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
-const user = {
+const userResolver = {
   queries: {
     getAllUsers: async () => {
       return await User.find()
@@ -127,4 +127,4 @@ const user = {
   }
 }
 
-module.exports = user
+module.exports = userResolver

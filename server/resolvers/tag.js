@@ -1,7 +1,7 @@
 const { UserInputError } = require("apollo-server-errors")
 const Tag = require("../models/Tag")
 
-const tag = {
+const tagResolver = {
   queries: {
     getAllTags: async () => {
       return await Tag.find()
@@ -91,4 +91,4 @@ const tag = {
   }
 }
 
-module.exports = tag
+module.exports = tagResolver

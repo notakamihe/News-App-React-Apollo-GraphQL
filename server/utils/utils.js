@@ -14,6 +14,10 @@ module.exports.getUserByToken = token => {
   }
 }
 
+module.exports.getFileExtension = mimetype => {
+  return "." + mimetype.split("/")[mimetype.split("/").length - 1]
+}
+
 module.exports.isIdValid = async (id, model) => {
   return model.findById(id)
     .then(doc => {

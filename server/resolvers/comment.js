@@ -1,4 +1,4 @@
-const comment = {
+const commentResolver = {
   queries: {
 
   },
@@ -7,4 +7,4 @@ const comment = {
   }
 }
 
-module.exports = comment
+module.exports = commentResolver

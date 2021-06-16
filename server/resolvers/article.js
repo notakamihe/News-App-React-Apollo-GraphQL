@@ -1,8 +1,12 @@
 const { UserInputError } = require("apollo-server-express");
 const Article = require("../models/Article")
-const fs = require("fs")
+const fs = require("fs");
+const path = require("path");
+const { resolve } = require("path");
+const {v4: uuidv4} = require("uuid");
+const { getFileExtension } = require("../utils/utils");
 
-const article = {
+const articleResolver = {
   queries: {
     getAllArticles: async () => {
       return Article.find().populate("authors").populate("tags").exec().then(doc => doc);
@@ -54,17 +58,42 @@ const article = {
           throw new Error(err)
         })
     },
-    updateArticleImage: async (parent, {file}) => {
-     args.file.then(file => {
-       const {createReadStream, filename, mimetype} = file
-       const fileStream = createReadStream()
+    updateArticleImage: async (parent, args) => {
+      try {
+        const article = await Article.findById(args.id)
 
-       fileStream.pipe(fs.createWriteStream(`../uploads/${filename}`))
+        if (!article)
+          throw new Error(`Article w/ id of ${args.id} not found.`)
+          
+        const file = await args.file
 
-       return file
-     })
+        if (file) {
+          const { createReadStream, mimetype, encoding } =  file
+  
+          if (!mimetype.includes("image"))
+            throw new UserInputError("Provided file must be an image.")
+  
+          const stream = createReadStream();
+          const url = path.join("uploads", "images", uuidv4() + getFileExtension(mimetype))
+  
+          await stream
+            .on("error", error => {
+              throw new Error(error)
+            }) 
+            .pipe(fs.createWriteStream(url))
+  
+          article.imageUrl = url
+        } else {
+          article.imageUrl = null
+        }
+
+        await article.save()
+        return article.populate("authors").populate("tags").execPopulate().then(doc => doc)
+      } catch (err) {
+        throw new Error(err)
+      }
     }
   }
 }
 
-module.exports = article
+module.exports = articleResolver
