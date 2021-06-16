@@ -62,7 +62,7 @@ type Comment {
 input CommentInput {
   content: String!
   repliedTo: ID,
-  user: ID
+  user: ID!
 }
 
 

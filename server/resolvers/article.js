@@ -2,7 +2,7 @@ const { UserInputError } = require("apollo-server-express");
 const Article = require("../models/Article")
 const fs = require("fs");
 const path = require("path");
-const { resolve } = require("path");
+const Comment = require("../models/Comment")
 const {v4: uuidv4} = require("uuid");
 const { getFileExtension } = require("../utils/utils");
 
@@ -25,6 +25,37 @@ const articleResolver = {
     }
   },
   mutations: {
+    addCommentToArticle: async (parent, args, context, info) => {
+      let article
+
+      try {
+        article = await Article.findById(args.id)
+
+        if (!article)
+          throw new UserInputError(`Article w/ id of ${args.id} not found.`)
+      } catch (err) {
+        throw new Error(err)
+      }
+
+      const {content, repliedTo, user} = args.input
+      const comment = new Comment({content, repliedTo, user})
+      
+      try {
+        const result = await comment.save();
+        
+        article.comments.push(result)
+        article.save();
+  
+        return article.populate("authors").populate("tags").execPopulate().then(d => d)
+      } catch (err) {
+        if (err.errors) {
+          throw new UserInputError(err.errors[Object.keys(err.errors)[0]].message)
+        }
+      
+        throw new Error(err)
+      }
+      
+    },
     createArticle: async (parent, args, context, info) => {
       const {title, body, authors, tags} = args.input
       const article = new Article({title, body, authors, tags, comments: []})
@@ -39,6 +70,18 @@ const articleResolver = {
 
         throw new Error(err)
       }
+    },
+    deleteArticle: async (parent, args, context, info) => {
+      return Article.findByIdAndDelete(args.id)
+        .then(doc => {
+          if (!doc)
+            throw new UserInputError(`Article w/ id of ${args.id} not found.`)
+
+          return `Article w/ id of ${args.id} was successfully deleted.`
+        })
+        .catch(err => {
+          throw new Error(err)
+        })
     },
     updateArticle: async (parent, args, context, info) => {
       const {title, body, authors, tags} = args.input
