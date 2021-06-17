@@ -5,11 +5,10 @@ const path = require("path");
 const Comment = require("../models/Comment")
 const {v4: uuidv4} = require("uuid");
 const { getFileExtension } = require("../utils/utils");
-
 const articleResolver = {
   queries: {
     getAllArticles: async () => {
-      return Article.find().populate("authors").populate("tags").exec().then(doc => doc);
+      return populatedArticles(Article.find())
     },
     getArticle: async (parent, args, context, info) => {
       return Article.findById(args.id)
@@ -17,7 +16,7 @@ const articleResolver = {
           if (!doc)
             throw new UserInputError(`Article w/ id of ${args.id} not found.`)
 
-          return doc.populate("authors").populate("tags").execPopulate().then(doc => doc);
+          return populatedArticles(doc)
         })
         .catch(err => {
           throw new Error(err)
@@ -37,16 +36,14 @@ const articleResolver = {
         throw new Error(err)
       }
 
-      const {content, repliedTo, user} = args.input
-      const comment = new Comment({content, repliedTo, user})
-      
       try {
-        const result = await comment.save();
-        
-        article.comments.push(result)
+        const {content, repliedTo, user} = args.input
+        const comment = await Comment.create({content, repliedTo, user})
+
+        article.comments.push(comment)
         article.save();
   
-        return article.populate("authors").populate("tags").execPopulate().then(d => d)
+        return populatedArticles(article)
       } catch (err) {
         if (err.errors) {
           throw new UserInputError(err.errors[Object.keys(err.errors)[0]].message)
@@ -54,7 +51,6 @@ const articleResolver = {
       
         throw new Error(err)
       }
-      
     },
     createArticle: async (parent, args, context, info) => {
       const {title, body, authors, tags} = args.input
@@ -62,7 +58,7 @@ const articleResolver = {
 
       try {
         const result = await article.save();
-        return result.populate("authors").populate("tags").execPopulate().then(doc => doc)
+        return populatedArticles(result)
       } catch (err) {
         if (err.errors) {
           throw new UserInputError(err.errors[Object.keys(err.errors)[0]].message)
@@ -91,7 +87,7 @@ const articleResolver = {
           if (!doc)
             throw new UserInputError(`Article w/ id of ${args.id} not found.`)
 
-          return doc.populate("authors").populate("tags").execPopulate().then(doc => doc)
+          return populatedArticles(doc)
         })
         .catch(err => {
           if (err.errors) {
@@ -131,12 +127,35 @@ const articleResolver = {
         }
 
         await article.save()
-        return article.populate("authors").populate("tags").execPopulate().then(doc => doc)
+        return populatedArticles(article)
       } catch (err) {
         throw new Error(err)
       }
     }
   }
+}
+
+const populatedArticles = async (docs) => {
+    const populatePromise = docs.populate("authors").populate("tags").populate({
+      path: "comments",
+      model: "Comment",
+      populate: [
+        { path: "user", model: "User" },
+        {
+          path: "repliedTo",
+          model: "Comment",
+          populate: [
+            { path: "user", model: "User" }
+          ]
+        }
+      ]
+    })
+
+    if ((await docs).length != undefined) {
+      return populatePromise.exec().then(d => d)
+    } else {
+      return populatePromise.execPopulate().then(d => d)
+    }
 }
 
 module.exports = articleResolver

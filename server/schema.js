@@ -47,7 +47,7 @@ input ArticleInput {
   title: String!
   body: String!
   authors: [ID]!
-  tags: [ID]
+  tags: [ID]!
 }
 
 
@@ -92,7 +92,7 @@ type Query {
   getArticleComments(id: ID): [Comment]
 
   getAllComments: [Comment]
-  getCommentById(id: ID): Comment
+  getComment(id: ID): Comment
 
   getAllTags: [Tag]
   getTag(id: ID): Tag

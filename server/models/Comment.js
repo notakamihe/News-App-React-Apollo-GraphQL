@@ -15,7 +15,7 @@ const commentSchema = mongoose.Schema({
   },
   repliedTo: {
     type: mongoose.Types.ObjectId,
-    ref: "User"
+    ref: "Comment"
   },
   user: {
     type: mongoose.Types.ObjectId,
@@ -23,12 +23,14 @@ const commentSchema = mongoose.Schema({
   },
 })
 
-commentSchema.path("repliedTo").validate(async (id) => {
-  const isValid = await isIdValid(id, User)
+const Comment = mongoose.model("Comment", commentSchema)
 
-  if (!isValid) {
-    console.log("hi");
-    throw new UserInputError(`No user found w/ id of ${id}.`)
+commentSchema.path("repliedTo").validate(async (id) => {
+  if (id) {
+    const isValid = await isIdValid(id, Comment)
+  
+    if (!isValid)
+      throw new UserInputError(`No comment found w/ id of ${id}.`)
   }
 
   return true
@@ -37,12 +39,10 @@ commentSchema.path("repliedTo").validate(async (id) => {
 commentSchema.path("user").validate(async (id) => {
   const isValid = await isIdValid(id, User)
 
-  if (!isValid) {
-    console.log("hi");
+  if (!isValid)
     throw new UserInputError(`No user found w/ id of ${id}.`)
-  }
 
   return true
 })
 
-module.exports = mongoose.model("Comment", commentSchema)
+module.exports = Comment;
