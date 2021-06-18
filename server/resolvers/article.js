@@ -5,6 +5,7 @@ const path = require("path");
 const Comment = require("../models/Comment")
 const {v4: uuidv4} = require("uuid");
 const { getFileExtension } = require("../utils/utils");
+
 const articleResolver = {
   queries: {
     getAllArticles: async () => {

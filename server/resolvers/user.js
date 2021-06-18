@@ -4,6 +4,10 @@ const { UserInputError, ApolloError } = require("apollo-server-errors")
 const User = require("../models/User")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const path = require("path")
+const fs = require("fs");
+const {v4: uuidv4} = require("uuid");
+const { getFileExtension } = require("../utils/utils");
 
 const userResolver = {
   queries: {
@@ -123,6 +127,41 @@ const userResolver = {
 
           throw new Error(err)
         })
+    },
+    updateUserPfp: async (parent, args, context, info) => {
+      try {
+        const user = await User.findById(args.id)
+
+        if (!user)
+          throw new UserInputError(`User w/ id of ${args.id} not found.`)
+          
+        const file = await args.file
+
+        if (file) {
+          const { createReadStream, mimetype, encoding } =  file
+  
+          if (!mimetype.includes("image"))
+            throw new UserInputError("Provided file must be an image.")
+  
+          const stream = createReadStream();
+          const url = path.join("uploads", "images", uuidv4() + getFileExtension(mimetype))
+  
+          await stream
+            .on("error", error => {
+              throw new Error(error)
+            }) 
+            .pipe(fs.createWriteStream(url))
+  
+          user.pfpUrl = url
+        } else {
+          user.pfpUrl = null
+        }
+
+        await user.save()
+        return user
+      } catch (err) {
+        throw new Error(err)
+      }
     }
   }
 }

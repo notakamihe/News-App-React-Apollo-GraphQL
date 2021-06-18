@@ -30,6 +30,9 @@ const userSchema = mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  pfpUrl: {
+    type: String
+  }
 })
 
 module.exports = mongoose.model("User", userSchema)

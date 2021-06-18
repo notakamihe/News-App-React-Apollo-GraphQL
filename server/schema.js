@@ -9,6 +9,7 @@ type User {
   role: String!
   description: String
   createdOn: String!
+  pfpUrl: String
 }
 
 input UserRegisterInput {
@@ -102,6 +103,7 @@ type Query {
 type Mutation {
   registerUser(input: UserRegisterInput) : Token
   updateUser(id: ID, input: UserUpdateInput) : User
+  updateUserPfp(id: ID, file: Upload) : User
   deleteUser(id: ID): String
 
   createArticle(input: ArticleInput): Article
