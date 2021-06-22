@@ -7,6 +7,9 @@ const tagSchema = mongoose.Schema({
     required: [true, "Tag name must not be blank."],
     maxLength: [30, "Tag name must have no more than 30 characters."],
     lowercase: true
+  },
+  imageUrl: {
+    type: String
   }
 })
 

@@ -70,6 +70,7 @@ input CommentInput {
 type Tag {
   _id: ID!
   name: String!
+  imageUrl: String
 }
 
 input TagInput {
@@ -90,6 +91,7 @@ type Query {
 
   getAllArticles: [Article]
   getArticle(id: ID): Article
+  getArticleComment(articleId: ID, commentId: ID): Comment
   getArticleComments(id: ID): [Comment]
 
   getAllComments: [Comment]
@@ -116,6 +118,7 @@ type Mutation {
 
   createTag(input: TagInput): Tag
   updateTag(id: ID, input: TagInput): Tag
+  updateTagImage(id: ID!, file: Upload): Tag
   deleteTag(id: ID): String
 }
 

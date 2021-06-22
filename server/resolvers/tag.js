@@ -1,4 +1,9 @@
 const { UserInputError } = require("apollo-server-errors")
+const fs = require("fs");
+const path = require("path");
+const {v4: uuidv4} = require("uuid");
+const { getFileExtension } = require("../utils/utils");
+
 const Tag = require("../models/Tag")
 
 const tagResolver = {
@@ -87,6 +92,40 @@ const tagResolver = {
   
           throw new Error(err)
         })
+    },
+    updateTagImage: async (parent, args, context, info) => {
+      try {
+        const tag = await Tag.findById(args.id)
+
+        if (!tag)
+          throw new Error(`Tag w/ id of ${args.id} not found.`)
+          
+        const file = await args.file
+
+        if (file) {
+          const { createReadStream, mimetype, encoding } =  file
+  
+          if (!mimetype.includes("image"))
+            throw new UserInputError("Provided file must be an image.")
+  
+          const stream = createReadStream();
+          const url = path.join("uploads", "images", uuidv4() + getFileExtension(mimetype))
+  
+          await stream
+            .on("error", error => {
+              throw new Error(error)
+            }) 
+            .pipe(fs.createWriteStream(url))
+  
+          tag.imageUrl = url
+        } else {
+          tag.imageUrl = null
+        }
+
+        return await tag.save()
+      } catch (err) {
+        throw new Error(err)
+      }
     }
   }
 }

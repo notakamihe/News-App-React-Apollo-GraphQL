@@ -8,6 +8,27 @@ const commentResolver = {
     getAllComments: async (parent, args, context, info) => {
       return populatedComments(Comment.find())
     },
+    getArticleComment: async (parent, args, context, info) => {
+      return Article.findById(args.articleId)
+        .then(doc => {
+          if (!doc)
+            throw new UserInputError(`Article w/ id of ${args.articleId} not found.`)
+
+            return Comment.findOne({$and: [{_id: args.commentId}, {_id: {$in: doc.comments}}]})
+              .then(d => {
+                if (!d)
+                  throw new UserInputError(`Comment w/ id of ${args.commentId} not found within article's comments.`)
+
+                  return populatedComments(d)
+              })
+              .catch(err => {
+                throw new Error(err)
+              })
+        })
+        .catch(err => {
+          throw new Error(err)
+        })
+    },
     getArticleComments: async (parent, args, context, info) => {
       return Article.findById(args.id)
         .then(doc => {
