@@ -2,12 +2,13 @@ import React from 'react';
 import {BrowserRouter, Switch, Route} from "react-router-dom"
 import {Home, Register, Login, ArticleCreate, ArticleDetail, ArticleList, ArticleUpdate, CommentDetail, CommentUpdate, TagCreate, 
   TagDetail, TagUpdate, TagList, UserDetail, UserUpdate} from "./pages"
-import {NotFound} from "./components"
+import {Header, NotFound} from "./components"
 
 const App : React.FC = () => {
   return (
    <div>
      <BrowserRouter>
+      <Header />
       <Switch>
         <Route exact path="/" component={Home} />
         <Route exact path="/register" component={Register} />

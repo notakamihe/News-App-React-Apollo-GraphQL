@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Teko');
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Archivo');
+
+* {
+  font-family: Teko;
+  font-size: 1.1rem;
+  letter-spacing: 0.1rem;
+}
+
+:root {
+  --primary-color: #ff66aa;
+}
+
+p, a{
+  font-weight: 500;
+  font-family: Nunito;
+  font-size: 0.7rem;
+}
+
+.btn-1 {
+  font-family: Nunito;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.btn-1:hover {
+  color: var(--primary-color)!important;
+  background-color: #ff66aa22;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.25s;
+}
+
+.btn-2 {
+  font-family: Archivo;
+  background-color: #000;
+  color: white!important;
+  font-size: 16px;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 3px;
+}
+
+.btn-3 {
+  font-family: Archivo;
+  background-color: #bbb;
+  color: #000!important;
+  font-size: 16px;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 3px;
+}
+
+.p-1:hover {
+  color: var(--primary-color)!important;
+  transition: all 0.3;
+}
+
+.no-decor {
+  text-decoration: none;
+  color: initial;
+}
